@@ -1,0 +1,15 @@
+version: '3'
+
+services: 
+  webserver:
+    build: ./docker/webserver/nginx    
+    ports: 
+      - 7000:80
+    volumes: 
+      - ./app:/var/www/html
+    links:
+      - php
+  php:
+    build: ./docker/php/fpm
+    volumes: 
+      - ./app:/var/www/html
