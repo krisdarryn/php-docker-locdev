@@ -1,15 +1,54 @@
 version: '3'
 
 services: 
+
+  # Web server Service: 
+  # Choose from the list of supported web server in ./docker/wesberser.
   webserver:
-    build: ./docker/webserver/nginx    
+    build: ./docker/webserver/nginx # Update this section.
+    container_name: webserver
     ports: 
       - 7000:80
     volumes: 
       - ./app:/var/www/html
-    links:
-      - php
+    networks: 
+      - locdev-network
+
+  # PHP Service: PHP-fpm or PHP-apache
+  # Choose from the list of supported PHP in ./docker/php.
   php:
-    build: ./docker/php/fpm
+    build: ./docker/php/fpm # Update this section.
+    container_name: php
+    tty: true
     volumes: 
       - ./app:/var/www/html
+    networks: 
+      - locdev-network
+
+  # Database Service: 
+  # Choose from the list of supported databases in ./docker/databases.
+  db:
+    build: ./docker/databases/mysql # Update this section.
+    container_name: db
+    tty: true
+    ports:
+      - 3306
+    restart: 
+      unless-stopped
+    environment: 
+      MYSQL_DATABASE: locdev
+      MYSQL_ROOT_PASSWORD: locdev
+    volumes: 
+      - dbdata:/var/lib/mysql
+    networks:
+      - locdev-network
+
+# Volumes
+volumes: 
+  dbdata:
+    driver: local
+
+# Docker Networks
+networks: 
+  locdev-network:
+    driver: bridge
