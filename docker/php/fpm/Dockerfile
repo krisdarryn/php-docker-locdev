@@ -1,15 +1,18 @@
 FROM php:7.3-fpm
 
-# Update apt-get
+# Add custom php config.
+COPY ./conf.d/ /usr/local/etc/php/conf.d/
+
+# Update apt-get.
 RUN apt-get update -qq
 
-# Install nano and vim
+# Install nano and vim.
 RUN apt-get install -y nano \
     && nano --version \
     && apt-get install -y vim \
     && vi --version
 
-# Install required PHP extensions
+# Install required PHP extensions.
 RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libpq-dev libzip-dev zip \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure zip --with-libzip \
@@ -33,8 +36,9 @@ RUN apt-get update && apt-get install curl \
   && node -v \
   && npm -v
 
-# Install composer
+# Install composer.
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer --version
 
+# Set working directory.
 WORKDIR /var/www/html
